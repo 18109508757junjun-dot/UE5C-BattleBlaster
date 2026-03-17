@@ -1,0 +1,55 @@
+# Ignore common Unreal Engine generated folders and files
+Binaries/
+Build/
+Intermediate/
+Saved/
+DerivedDataCache/
+
+# Ignore asset content (do not upload game assets)
+Content/
+*.uasset
+*.umap
+
+# Keep the .uproject file but ignore its user-specific variants
+*.uproject.user
+
+# Visual Studio / IDE
+.vs/
+*.suo
+*.user
+*.userprefs
+*.VC.db
+*.VC.opendb
+.vscode/
+.idea/
+
+# Build outputs and temporary files
+*.exe
+*.dll
+*.lib
+*.app
+*.pdb
+*.obj
+*.o
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Keep source code and config folders
+!Source/
+!Source/**
+!Config/
+!Config/**
+!*.uproject
+
+# Ignore other generated or large caches
+Saved/**
+Binaries/**
+Intermediate/**
+DerivedDataCache/**
+
+# Optional: ignore packaged builds
+Saved/Crashes/**
+*.pak
