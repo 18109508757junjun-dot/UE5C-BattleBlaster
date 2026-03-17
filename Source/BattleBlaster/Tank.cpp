@@ -45,6 +45,15 @@ void ATank::BeginPlay()
 void ATank::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		FHitResult HitResult;
+		PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
+		HitResult.ImpactPoint;
+		RotateTurret(HitResult.ImpactPoint);
+
+		//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 25.0f, 12, FColor::Blue);
+	}
 
 }
 
@@ -56,6 +65,7 @@ void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	{
 		EIC->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ATank::MoveInput);//绑定输入动作，当MoveAction被触发时调用ATank::MoveInput函数
 		EIC->BindAction(TurnAction, ETriggerEvent::Triggered, this, &ATank::TurnInput);
+		EIC->BindAction(OpeanFireAction, ETriggerEvent::Started, this, &ATank::OpeanFire);
 	}
 }
 

@@ -52,6 +52,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float MoveSpeed = 300.0f;
+	
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* OpeanFireAction;
 
 	UPROPERTY(EditAnywhere)
 	float TurnRate = 50.0f;
