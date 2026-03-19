@@ -26,8 +26,8 @@ void ATank::BeginPlay()
 {
 	Super::BeginPlay();
 	//获取玩家控制器 cast<>()是将（）里的对象转换成（）里的类型，如果转换成功就返回这个对象，如果转换失败就返回nullptr
-	
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	PlayerController = Cast<APlayerController>(Controller);
+	if (PlayerController)
 	{//获取玩家控制器的本地玩家
 		if (ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer())
 		{//获取玩家控制器的增强输入子系统
@@ -38,14 +38,14 @@ void ATank::BeginPlay()
 		}
 	}
 
-
+	SetPlayerEnabled(false);
 }
 
 // Called every frame
 void ATank::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	if (PlayerController)
 	{
 		FHitResult HitResult;
 		PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
@@ -75,7 +75,7 @@ void ATank::MoveInput(const FInputActionValue& Value)
 	FVector DeltaLocation = FVector(0.0f, 0.0f, 0.0f);
 	DeltaLocation.X = InputValue * MoveSpeed * UGameplayStatics::GetWorldDeltaSeconds(GetWorld());//UGameplayStatics::GetWorldDeltaSeconds(GetWorld())获取世界的每帧时间
 	AddActorLocalOffset(DeltaLocation, true);//第二个参数为true表示如果发生碰撞会停止而不会穿过物体
-	
+
 }
 
 void ATank::TurnInput(const FInputActionValue& Value)
@@ -84,4 +84,32 @@ void ATank::TurnInput(const FInputActionValue& Value)
 	FRotator DeltaRotation = FRotator(0.0f, 0.0f, 0.0f);
 	DeltaRotation.Yaw = InputValue * TurnRate * UGameplayStatics::GetWorldDeltaSeconds(GetWorld());
 	AddActorLocalRotation(DeltaRotation, true);
+}
+
+void ATank::HandleDestruction()
+{
+	Super::HandleDestruction();
+
+	SetActorHiddenInGame(true);//将坦克隐藏
+	SetActorTickEnabled(false);//禁用坦克的Tick函数
+	SetPlayerEnabled(false);//禁用玩家输入
+	IsAlive = false;//将坦克的IsAlive属性设置为false，表示坦克已经死亡
+	UE_LOG(LogTemp, Display, TEXT("Tank HandleDestruction!"));
+}
+
+void ATank::SetPlayerEnabled(bool Enabled)
+{
+	if (PlayerController)
+	{
+		
+		if (Enabled)
+		{
+			EnableInput(PlayerController);
+		}
+		else
+		{
+			DisableInput(PlayerController);
+		}
+		PlayerController->bShowMouseCursor = Enabled;
+	}
 }

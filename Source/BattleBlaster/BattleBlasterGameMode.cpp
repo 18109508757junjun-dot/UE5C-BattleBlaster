@@ -4,6 +4,7 @@
 #include "BattleBlasterGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "Tower.h"
+#include "BattleBlasterGameInstance.h"
 
 void ABattleBlasterGameMode::BeginPlay()
 {
@@ -37,10 +38,103 @@ void ABattleBlasterGameMode::BeginPlay()
 			if (Tower && Tank)
 			{
 				Tower->Tank = Tank;
-				UE_LOG(LogTemp, Display, TEXT("%s setting the tank variable!"), *Tower->GetActorNameOrLabel());
+				/*UE_LOG(LogTemp, Display, TEXT("%s setting the tank variable!"), *Tower->GetActorNameOrLabel());*/
 			}
 		}
 
 		LoopIndex++;
 	}
+
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (PlayerController)
+	{
+		ScreenMessageWidget = CreateWidget<UScreenMessage>(PlayerController, ScreenMessageClass);
+		if (ScreenMessageWidget)
+		{
+			ScreenMessageWidget->AddToPlayerScreen();
+			ScreenMessageWidget->SetMessageText("Get Ready!");
+		}
+	}
+
+	CountdownSeconds = CountdownDelay;
+	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &ABattleBlasterGameMode::OnCountdownTimeOut, 1.0f, true);
 }
+
+void ABattleBlasterGameMode::OnCountdownTimeOut()
+{
+	CountdownSeconds -= 1;
+	if (CountdownSeconds > 0)
+	{
+		ScreenMessageWidget->SetMessageText(FString::FromInt(CountdownSeconds));
+	}
+	else if (CountdownSeconds == 0)
+	{
+		ScreenMessageWidget->SetMessageText("Go!");
+		Tank->SetPlayerEnabled(true);
+	}
+	else
+	{
+		GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+		ScreenMessageWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void ABattleBlasterGameMode::ActorDied(AActor * DeadActor)
+{
+	bool IsGameOver = false;
+
+	if (DeadActor == Tank)
+	{
+		Tank->HandleDestruction();
+		IsGameOver = true;
+	}
+	else
+	{
+		ATower* DeadTower = Cast<ATower>(DeadActor);
+		if (DeadTower)
+		{
+			DeadTower->HandleDestruction();
+			TowerCount--;
+			if (TowerCount <= 0)
+			{
+				IsGameOver = true;
+				IsVictory = true;
+			}
+		}
+	}
+	
+
+	if (IsGameOver)
+	{
+		FString GameOverMessage = IsVictory ? "Victory!" : "Defeat!";
+		ScreenMessageWidget->SetMessageText(GameOverMessage);
+		ScreenMessageWidget->SetVisibility(ESlateVisibility::Visible);
+
+		FTimerHandle GameOverTimerHandle;
+		GetWorldTimerManager().SetTimer(GameOverTimerHandle, this, &ABattleBlasterGameMode::OnGameOverTimeOut, GameOverDelay, true);
+	}
+}
+
+//重新加载关卡
+void ABattleBlasterGameMode::OnGameOverTimeOut()
+{
+	UGameInstance* GameInstance = GetGameInstance();
+	if (GameInstance)
+	{
+		UBattleBlasterGameInstance* BattleBlasterGameInstance = Cast<UBattleBlasterGameInstance>(GameInstance);
+		if (BattleBlasterGameInstance)
+		{
+			if (IsVictory)
+			{
+				BattleBlasterGameInstance->LoadNextLevel();
+			}
+			else
+			{
+				BattleBlasterGameInstance->RestartCurrentLevel();
+			}
+		}
+	}
+	
+}
+
+

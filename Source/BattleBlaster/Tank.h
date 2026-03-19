@@ -12,7 +12,7 @@
 #include "Tank.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class BATTLEBLASTER_API ATank : public ABasePawn
@@ -20,7 +20,7 @@ class BATTLEBLASTER_API ATank : public ABasePawn
 	GENERATED_BODY()
 
 
-	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -40,7 +40,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* Camera;
-	
+
 	UPROPERTY(EditAnywhere, Category = "Input")
 	class UInputMappingContext* DefaultMappingContext;
 
@@ -52,15 +52,23 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float MoveSpeed = 300.0f;
-	
+
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* OpeanFireAction;
 
 	UPROPERTY(EditAnywhere)
 	float TurnRate = 50.0f;
 
+	APlayerController* PlayerController;
+
+	float IsAlive = true;
+
 	void MoveInput(const FInputActionValue& Value);
 
 	void TurnInput(const FInputActionValue& Value);
+
+	void HandleDestruction();
+
+	void SetPlayerEnabled(bool Enabled);
 
 };

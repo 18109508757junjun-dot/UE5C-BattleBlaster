@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Components/CapsuleComponent.h"
 #include "Projectile.h"
+#include "NIagaraFunctionLibrary.h"
 #include "BasePawn.generated.h"
 
 UCLASS()
@@ -34,8 +35,23 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AProjectile> ProjectileClass;
 
+	// Damage to apply to spawned projectiles (configurable per pawn/tower)
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float ProjectileDamage = 25.0f;
+	
+	UPROPERTY(EditAnywhere)
+	UNiagaraSystem* DeathParticles;
+	
+	UPROPERTY(EditAnywhere)
+	USoundBase* ExplodeSound;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShakeBase> DeathCameraShakeClass;
+
 	void RotateTurret(FVector LookAtTarget);
 
 	void OpeanFire();
+
+	void HandleDestruction();
 
 };

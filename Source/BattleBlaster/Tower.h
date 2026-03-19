@@ -8,7 +8,7 @@
 #include "Tower.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class BATTLEBLASTER_API ATower : public ABasePawn
@@ -18,7 +18,7 @@ class BATTLEBLASTER_API ATower : public ABasePawn
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
 public:
 
 	ATower();
@@ -30,12 +30,18 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float FireRange = 800.0f;
-	
+
 	UPROPERTY(EditAnywhere)
 	float FireRate = 2.0f;
+
+	
+
+	
 
 	void CheckFireCondition();
 
 	bool InFireRange();
+
+	void HandleDestruction();
 
 };
