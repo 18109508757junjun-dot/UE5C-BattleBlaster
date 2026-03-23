@@ -64,3 +64,7 @@
 
 ## 📜 许可声明 (License)
 本项目仅用于个人学习交流与作品集展示。素材引用自公开资源（如虚幻商城等）。
+
+## 📺 视频演示 (Video Demo)
+* **Bilibili：** [点击查看演示视频](https://www.bilibili.com/video/BV1fGA3z9Eq2/?spm_id_from=333.1387.homepage.video_card.click&vd_source=72fdb74aa7b29802264b42d4e42c0f40)
+
